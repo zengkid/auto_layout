@@ -14,8 +14,10 @@ class SampleLayout extends StatelessWidget {
             onMenuItemPress: (index) {
               print('mneu_$index is pressed');
             },
-            menuItemBuilder: (context, index) {
-              return Text("menu_$index");
+            menuItemBuilder: (context, index, selectedIndex) {
+              var color =
+                  index == selectedIndex ? Colors.grey : Colors.transparent;
+              return ListTile(tileColor: color, title: Text("menu_$index"));
             },
             bodyItemBuilder: (context, index) {
               return index == null ? Text("Welcome") : Text("body_$index");

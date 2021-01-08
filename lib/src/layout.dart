@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 typedef MenuItemPress = void Function(int index);
+typedef MenuItemBuilder = Widget Function(
+    BuildContext context, int index, int selectedIndex);
 
 class AudoLayoutBuilder extends StatefulWidget {
   final Widget title;
   final int largeBreakpoint;
   final MenuItemPress onMenuItemPress;
-  final IndexedWidgetBuilder menuItemBuilder;
+  final MenuItemBuilder menuItemBuilder;
   final IndexedWidgetBuilder bodyItemBuilder;
   final int itemCount;
 
@@ -35,7 +38,7 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
   final Widget title;
 
   final MenuItemPress onMenuItemPress;
-  final IndexedWidgetBuilder menuItemBuilder;
+  final MenuItemBuilder menuItemBuilder;
   final IndexedWidgetBuilder bodyItemBuilder;
   final int itemCount;
   final int largeBreakpoint;
@@ -56,10 +59,9 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
     _animationController = AnimationController(
         duration: const Duration(milliseconds: 300), vsync: this);
     _menuAnimation =
-        Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+        Tween<double>(begin: 1.0, end: 0.0).animate(_animationController);
     _iconAnimation =
         Tween<double>(begin: 0.0, end: 0.25).animate(_animationController);
-    _animationController.forward();
   }
 
   @override
@@ -109,22 +111,7 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
                 Expanded(
                     child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: ListView.builder(
-                    itemCount: itemCount,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                          onTap: () {
-                            if (onMenuItemPress != null) {
-                              onMenuItemPress(index);
-                            }
-                            setState(() {
-                              _currentIndex = index;
-                            });
-                            Navigator.pop(context);
-                          },
-                          title: menuItemBuilder(context, index));
-                    },
-                  ),
+                  child: _buildMenus(true),
                 ))
               ])),
         ),
@@ -142,7 +129,7 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
         appBar: AppBar(
           leading: IconButton(
             onPressed: () {
-              _hideMenu
+              !_hideMenu
                   ? _animationController.forward()
                   : _animationController.reverse();
               _hideMenu = !_hideMenu;
@@ -170,21 +157,7 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
                     },
                     child: Drawer(
                       elevation: 2,
-                      child: ListView.builder(
-                        itemCount: itemCount,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                              onTap: () {
-                                if (onMenuItemPress != null) {
-                                  onMenuItemPress(index);
-                                }
-                                setState(() {
-                                  _currentIndex = index;
-                                });
-                              },
-                              title: menuItemBuilder(context, index));
-                        },
-                      ),
+                      child: _buildMenus(false),
                     ),
                   ),
                   Expanded(
@@ -199,6 +172,30 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
           ],
         ),
       ),
+    );
+  }
+
+  ListView _buildMenus([bool needHide = false]) {
+    return ListView.builder(
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        return MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+              onTap: () {
+                if (onMenuItemPress != null) {
+                  onMenuItemPress(index);
+                }
+                setState(() {
+                  _currentIndex = index;
+                });
+                if (needHide) {
+                  Navigator.pop(context);
+                }
+              },
+              child: menuItemBuilder(context, index, _currentIndex)),
+        );
+      },
     );
   }
 
