@@ -105,9 +105,19 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
                 Container(
                     height: 64,
                     child: DrawerHeader(
+                        padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                             color: Theme.of(context).primaryColor),
-                        child: Text('Menu'))),
+                        child: IconButton(
+                          alignment: Alignment.centerLeft,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(
+                            Icons.menu,
+                            color: Theme.of(context).bottomAppBarColor,
+                          ),
+                        ))),
                 Expanded(
                     child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -179,20 +189,24 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
     return ListView.builder(
       itemCount: itemCount,
       itemBuilder: (context, index) {
-        return InkWell(
-            mouseCursor: SystemMouseCursors.click, //not support web?
-            onTap: () {
-              if (onMenuItemPress != null) {
-                onMenuItemPress(index);
-              }
-              setState(() {
-                _currentIndex = index;
-              });
-              if (needHide) {
-                Navigator.pop(context);
-              }
-            },
-            child: menuItemBuilder(context, index, _currentIndex));
+        return MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () {
+                if (onMenuItemPress != null) {
+                  onMenuItemPress(index);
+                }
+                setState(() {
+                  _currentIndex = index;
+                });
+                if (needHide) {
+                  Navigator.pop(context);
+                }
+              },
+              child: AbsorbPointer(
+                  //use onMenuItemPress instead of child press
+                  child: menuItemBuilder(context, index, _currentIndex)),
+            ));
       },
     );
   }
