@@ -16,7 +16,7 @@ class SampleLayout extends StatelessWidget {
             },
             menuItemBuilder: (context, index, selectedIndex) {
               var color =
-                  index == selectedIndex ? Colors.grey : Colors.transparent;
+                  index == selectedIndex ? Colors.grey[50] : Colors.transparent;
               return ListTile(tileColor: color, title: Text("menu_$index"));
             },
             bodyItemBuilder: (context, index) {

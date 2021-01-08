@@ -180,21 +180,20 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
       itemCount: itemCount,
       itemBuilder: (context, index) {
         return MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: GestureDetector(
-              onTap: () {
-                if (onMenuItemPress != null) {
-                  onMenuItemPress(index);
-                }
-                setState(() {
-                  _currentIndex = index;
-                });
-                if (needHide) {
-                  Navigator.pop(context);
-                }
-              },
-              child: menuItemBuilder(context, index, _currentIndex)),
-        );
+            cursor: SystemMouseCursors.click, //not support web?
+            child: InkWell(
+                onTap: () {
+                  if (onMenuItemPress != null) {
+                    onMenuItemPress(index);
+                  }
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                  if (needHide) {
+                    Navigator.pop(context);
+                  }
+                },
+                child: menuItemBuilder(context, index, _currentIndex)));
       },
     );
   }
