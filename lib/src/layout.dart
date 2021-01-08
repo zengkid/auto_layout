@@ -1,33 +1,40 @@
 import 'package:flutter/material.dart';
 
-class SimpleLayout extends StatefulWidget {
+typedef MenuItemPress = void Function(int index);
+
+class AudoLayoutBuilder extends StatefulWidget {
   final Widget title;
   final int largeBreakpoint;
+  final MenuItemPress onMenuItemPress;
   final IndexedWidgetBuilder menuItemBuilder;
   final IndexedWidgetBuilder bodyItemBuilder;
   final int itemCount;
 
-  const SimpleLayout(
+  const AudoLayoutBuilder(
       {Key key,
       this.title,
       this.itemCount,
+      this.onMenuItemPress,
       this.menuItemBuilder,
       this.bodyItemBuilder,
       this.largeBreakpoint = 600})
       : super(key: key);
 
   @override
-  _SimpleLayoutState createState() => _SimpleLayoutState(
+  _AudoLayoutBuilderState createState() => _AudoLayoutBuilderState(
       this.title,
       this.itemCount,
+      this.onMenuItemPress,
       this.menuItemBuilder,
       this.bodyItemBuilder,
       this.largeBreakpoint);
 }
 
-class _SimpleLayoutState extends State<SimpleLayout> {
+class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
+    with TickerProviderStateMixin {
   final Widget title;
 
+  final MenuItemPress onMenuItemPress;
   final IndexedWidgetBuilder menuItemBuilder;
   final IndexedWidgetBuilder bodyItemBuilder;
   final int itemCount;
@@ -36,8 +43,24 @@ class _SimpleLayoutState extends State<SimpleLayout> {
   int _currentIndex;
   bool _hideMenu = false;
 
-  _SimpleLayoutState(this.title, this.itemCount, this.menuItemBuilder,
-      this.bodyItemBuilder, this.largeBreakpoint);
+  AnimationController _animationController;
+  Animation<double> _menuAnimation;
+  Animation<double> _iconAnimation;
+
+  _AudoLayoutBuilderState(this.title, this.itemCount, this.onMenuItemPress,
+      this.menuItemBuilder, this.bodyItemBuilder, this.largeBreakpoint);
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+        duration: const Duration(milliseconds: 300), vsync: this);
+    _menuAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+    _iconAnimation =
+        Tween<double>(begin: 0.0, end: 0.25).animate(_animationController);
+    _animationController.forward();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +68,7 @@ class _SimpleLayoutState extends State<SimpleLayout> {
       builder: (context, constraints) {
         var maxWidth = constraints.maxWidth;
         if (maxWidth >= largeBreakpoint) {
-          var drawerWidth = maxWidth / 4;
+          var drawerWidth = maxWidth / 5;
           if (drawerWidth < 180) {
             drawerWidth = 180;
           }
@@ -91,6 +114,9 @@ class _SimpleLayoutState extends State<SimpleLayout> {
                     itemBuilder: (context, index) {
                       return ListTile(
                           onTap: () {
+                            if (onMenuItemPress != null) {
+                              onMenuItemPress(index);
+                            }
                             setState(() {
                               _currentIndex = index;
                             });
@@ -116,11 +142,15 @@ class _SimpleLayoutState extends State<SimpleLayout> {
         appBar: AppBar(
           leading: IconButton(
             onPressed: () {
-              setState(() {
-                _hideMenu = !_hideMenu;
-              });
+              _hideMenu
+                  ? _animationController.forward()
+                  : _animationController.reverse();
+              _hideMenu = !_hideMenu;
             },
-            icon: _hideMenu ? Icon(Icons.menu) : Icon(Icons.menu_open),
+            icon: RotationTransition(
+                alignment: Alignment.center,
+                turns: _iconAnimation,
+                child: Icon(Icons.menu)),
           ),
           title: title,
         ),
@@ -131,8 +161,13 @@ class _SimpleLayoutState extends State<SimpleLayout> {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  Container(
-                    width: _hideMenu ? 0 : drawerWidth,
+                  AnimatedBuilder(
+                    animation: _menuAnimation,
+                    builder: (BuildContext context, Widget child) {
+                      return Container(
+                          width: _menuAnimation.value * drawerWidth,
+                          child: child);
+                    },
                     child: Drawer(
                       elevation: 2,
                       child: ListView.builder(
@@ -140,6 +175,9 @@ class _SimpleLayoutState extends State<SimpleLayout> {
                         itemBuilder: (context, index) {
                           return ListTile(
                               onTap: () {
+                                if (onMenuItemPress != null) {
+                                  onMenuItemPress(index);
+                                }
                                 setState(() {
                                   _currentIndex = index;
                                 });
@@ -162,5 +200,11 @@ class _SimpleLayoutState extends State<SimpleLayout> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 }

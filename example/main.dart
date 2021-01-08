@@ -7,10 +7,13 @@ class SampleLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: SimpleLayout(
+        home: AudoLayoutBuilder(
             largeBreakpoint: 500,
             title: Text("Sample"),
             itemCount: 10,
+            onMenuItemPress: (index) {
+              print('mneu_$index is pressed');
+            },
             menuItemBuilder: (context, index) {
               return Text("menu_$index");
             },

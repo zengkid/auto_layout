@@ -6,8 +6,8 @@ It is a very simple layout for flutter.
 ## Getting Started
 
 ```dart
+import 'package:auto_layout/auto_layout.dart';
 import 'package:flutter/material.dart';
-import 'package:simple_layout/simple_layout.dart';
 
 void main() => runApp(SampleLayout());
 
@@ -15,10 +15,13 @@ class SampleLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: SimpleLayout(
-          largeBreakpoint: 500, //  screen > largeBreakpoint,then always show the drawer
+        home: AudoLayoutBuilder(
+            largeBreakpoint: 500,
             title: Text("Sample"),
             itemCount: 10,
+            onMenuItemPress: (index) {
+              print('mneu_$index is pressed');
+            },
             menuItemBuilder: (context, index) {
               return Text("menu_$index");
             },
@@ -27,6 +30,7 @@ class SampleLayout extends StatelessWidget {
             }));
   }
 }
+
 ```
 
 
