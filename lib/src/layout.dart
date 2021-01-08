@@ -181,6 +181,17 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
       itemBuilder: (context, index) {
         return InkWell(
             mouseCursor: SystemMouseCursors.click, //not support web?
+            onTap: () {
+              if (onMenuItemPress != null) {
+                onMenuItemPress(index);
+              }
+              setState(() {
+                _currentIndex = index;
+              });
+              if (needHide) {
+                Navigator.pop(context);
+              }
+            },
             child: menuItemBuilder(context, index, _currentIndex));
       },
     );
