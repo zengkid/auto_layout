@@ -1,4 +1,4 @@
-import 'package:auto_layout/layout.dart';
+import 'package:auto_layout/auto_layout.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(AdminPage());
