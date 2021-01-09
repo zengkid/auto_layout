@@ -1,53 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-typedef MenuItemPress = void Function(int index);
-typedef MenuItemBuilder = Widget Function(
-    BuildContext context, int index, int selectedIndex);
+typedef BuildBody = void Function(int bodyItemIndex);
+
+typedef MenuBuilder = Widget Function(BuildContext context, BuildBody handle);
 
 class AudoLayoutBuilder extends StatefulWidget {
   final Widget title;
   final int largeBreakpoint;
-  final MenuItemPress onMenuItemPress;
-  final MenuItemBuilder menuItemBuilder;
+  final int initialPage;
+  final MenuBuilder menuBuilder;
   final IndexedWidgetBuilder bodyItemBuilder;
-  final int itemCount;
-
   final List<Widget> actions;
 
   const AudoLayoutBuilder(
       {Key key,
       this.title,
       this.actions,
-      this.itemCount,
-      this.onMenuItemPress,
-      this.menuItemBuilder,
+      this.menuBuilder,
       this.bodyItemBuilder,
-      this.largeBreakpoint = 600})
+      this.largeBreakpoint = 600,
+      this.initialPage})
       : super(key: key);
 
   @override
-  _AudoLayoutBuilderState createState() => _AudoLayoutBuilderState(
-      this.title,
-      this.actions,
-      this.itemCount,
-      this.onMenuItemPress,
-      this.menuItemBuilder,
-      this.bodyItemBuilder,
-      this.largeBreakpoint);
+  _AudoLayoutBuilderState createState() => _AudoLayoutBuilderState();
 }
 
 class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
     with TickerProviderStateMixin {
-  final Widget title;
-  final List<Widget> actions;
-
-  final MenuItemPress onMenuItemPress;
-  final MenuItemBuilder menuItemBuilder;
-  final IndexedWidgetBuilder bodyItemBuilder;
-  final int itemCount;
-  final int largeBreakpoint;
-
   int _currentIndex;
   bool _hideMenu = false;
 
@@ -55,18 +36,10 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
   Animation<double> _menuAnimation;
   Animation<double> _iconAnimation;
 
-  _AudoLayoutBuilderState(
-      this.title,
-      this.actions,
-      this.itemCount,
-      this.onMenuItemPress,
-      this.menuItemBuilder,
-      this.bodyItemBuilder,
-      this.largeBreakpoint);
-
   @override
   void initState() {
     super.initState();
+    _currentIndex = widget.initialPage;
     _animationController = AnimationController(
         duration: const Duration(milliseconds: 300), vsync: this);
     _menuAnimation =
@@ -80,7 +53,7 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
     return LayoutBuilder(
       builder: (context, constraints) {
         var maxWidth = constraints.maxWidth;
-        if (maxWidth >= largeBreakpoint) {
+        if (maxWidth >= widget.largeBreakpoint) {
           var drawerWidth = maxWidth / 5;
           if (drawerWidth < 180) {
             drawerWidth = 180;
@@ -107,8 +80,8 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: true,
-          title: this.title,
-          actions: actions,
+          title: widget.title,
+          actions: widget.actions,
         ),
         drawer: Container(
           width: drawerWidth,
@@ -142,7 +115,7 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: bodyItemBuilder(context, _currentIndex),
+          child: widget.bodyItemBuilder(context, _currentIndex),
         ),
       ),
     );
@@ -164,8 +137,8 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
                 turns: _iconAnimation,
                 child: Icon(Icons.menu)),
           ),
-          title: title,
-          actions: actions,
+          title: widget.title,
+          actions: widget.actions,
         ),
         body: Column(
           children: <Widget>[
@@ -189,7 +162,7 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(10),
-                      child: bodyItemBuilder(context, _currentIndex),
+                      child: widget.bodyItemBuilder(context, _currentIndex),
                     ),
                   ),
                 ],
@@ -201,29 +174,15 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
     );
   }
 
-  ListView _buildMenus([bool needHide = false]) {
-    return ListView.builder(
-      itemCount: itemCount,
-      itemBuilder: (context, index) {
-        return MouseRegion(
-            cursor: SystemMouseCursors.click, //not support web?
-            child: GestureDetector(
-              onTap: () {
-                if (onMenuItemPress != null) {
-                  onMenuItemPress(index);
-                }
-                setState(() {
-                  _currentIndex = index;
-                });
-                if (needHide) {
-                  Navigator.pop(context);
-                }
-              },
-              child: AbsorbPointer(
-                  child: menuItemBuilder(context, index, _currentIndex)),
-            ));
-      },
-    );
+  Widget _buildMenus([bool needHide = false]) {
+    return widget.menuBuilder(context, (index) {
+      setState(() {
+        _currentIndex = index;
+      });
+      if (needHide) {
+        Navigator.of(context).pop();
+      }
+    });
   }
 
   @override

@@ -17,19 +17,21 @@ class AdminPage extends StatelessWidget {
               icon: Icon(Icons.logout),
             )
           ],
-          itemCount: 10,
-          onMenuItemPress: (index) {
-            print("menu_$index pressed");
+          menuBuilder: (BuildContext context, BuildBody buildBody) {
+            return ListView.builder(
+                itemCount: 10,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    onTap: () {
+                      buildBody(index);
+                    },
+                    title: Text('menu_$index'),
+                  );
+                });
           },
-          menuItemBuilder: (context, index, selectedIndex) {
-            return ListTile(
-                tileColor: index == selectedIndex
-                    ? Colors.grey[200]
-                    : Colors.transparent,
-                title: Text("menu_$index"));
-          },
+          initialPage: 2,
           bodyItemBuilder: (context, index) {
-            print('building body');
+            print('building body $index');
             return index == null ? Text("Welcome") : Text("body_$index");
           }),
     );
