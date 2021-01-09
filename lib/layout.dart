@@ -13,9 +13,12 @@ class AudoLayoutBuilder extends StatefulWidget {
   final IndexedWidgetBuilder bodyItemBuilder;
   final int itemCount;
 
+  final List<Widget> actions;
+
   const AudoLayoutBuilder(
       {Key key,
       this.title,
+      this.actions,
       this.itemCount,
       this.onMenuItemPress,
       this.menuItemBuilder,
@@ -26,6 +29,7 @@ class AudoLayoutBuilder extends StatefulWidget {
   @override
   _AudoLayoutBuilderState createState() => _AudoLayoutBuilderState(
       this.title,
+      this.actions,
       this.itemCount,
       this.onMenuItemPress,
       this.menuItemBuilder,
@@ -36,6 +40,7 @@ class AudoLayoutBuilder extends StatefulWidget {
 class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
     with TickerProviderStateMixin {
   final Widget title;
+  final List<Widget> actions;
 
   final MenuItemPress onMenuItemPress;
   final MenuItemBuilder menuItemBuilder;
@@ -50,8 +55,14 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
   Animation<double> _menuAnimation;
   Animation<double> _iconAnimation;
 
-  _AudoLayoutBuilderState(this.title, this.itemCount, this.onMenuItemPress,
-      this.menuItemBuilder, this.bodyItemBuilder, this.largeBreakpoint);
+  _AudoLayoutBuilderState(
+      this.title,
+      this.actions,
+      this.itemCount,
+      this.onMenuItemPress,
+      this.menuItemBuilder,
+      this.bodyItemBuilder,
+      this.largeBreakpoint);
 
   @override
   void initState() {
@@ -94,7 +105,11 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
   SafeArea _buildMiddleLayout(double drawerWidth, BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(automaticallyImplyLeading: true, title: this.title),
+        appBar: AppBar(
+          automaticallyImplyLeading: true,
+          title: this.title,
+          actions: actions,
+        ),
         drawer: Container(
           width: drawerWidth,
           child: Drawer(
@@ -150,6 +165,7 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
                 child: Icon(Icons.menu)),
           ),
           title: title,
+          actions: actions,
         ),
         body: Column(
           children: <Widget>[
@@ -190,7 +206,7 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
       itemCount: itemCount,
       itemBuilder: (context, index) {
         return MouseRegion(
-            cursor: SystemMouseCursors.click,
+            cursor: SystemMouseCursors.click, //not support web?
             child: GestureDetector(
               onTap: () {
                 if (onMenuItemPress != null) {
@@ -204,7 +220,6 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
                 }
               },
               child: AbsorbPointer(
-                  //use onMenuItemPress instead of child press
                   child: menuItemBuilder(context, index, _currentIndex)),
             ));
       },
