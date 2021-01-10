@@ -5,14 +5,53 @@ typedef BuildBody = void Function(int bodyItemIndex);
 
 typedef MenuBuilder = Widget Function(BuildContext context, BuildBody handle);
 
+/// build a auto layout widget
 class AudoLayoutBuilder extends StatefulWidget {
+  ///app bar title
   final Widget title;
+
+  ///define large device width, default is 600
   final int largeBreakpoint;
+
+  ///initial page index
   final int initialPage;
+
+  ///menu builder
   final MenuBuilder menuBuilder;
+
+  ///body item builder, dependent on menu index
   final IndexedWidgetBuilder bodyItemBuilder;
+
+  ///app bar actions
   final List<Widget> actions;
 
+  /// build a auto layout
+  ///
+  ///```dart
+  ///  AudoLayoutBuilder(
+  ///    title: Text("Admin"),
+  ///    actions: [
+  ///      IconButton(
+  ///        icon: Icon(Icons.logout),
+  ///      )
+  ///    ],
+  ///    menuBuilder: (BuildContext context, BuildBody buildBody) {
+  ///      return ListView.builder(
+  ///          itemCount: 10,
+  ///          itemBuilder: (context, index) {
+  ///            return ListTile(
+  ///              onTap: () {
+  ///                buildBody(index); //must invoke the method to build body content
+  ///              },
+  ///              title: Text('menu_$index'),
+  ///            );
+  ///          });
+  ///    },
+  ///    initialPage: 0,  //start index = 0
+  ///    bodyItemBuilder: (context, index) {
+  ///      return index == null ? Text("Welcome") : Text("body_$index");
+  ///  })
+  ///```
   const AudoLayoutBuilder(
       {Key key,
       this.title,

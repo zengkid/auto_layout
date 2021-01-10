@@ -1,10 +1,19 @@
-# simple_layout
+# auto_layout
 
-It is a very simple layout for flutter.
-
+auto admin layout builder, it can build  difference layout with difference device
 
 ## Getting Started
 
+* add library to your pubspec.yaml
+
+```yaml
+
+dependencies:
+  uto_layout: ^latest_version
+  
+```
+
+admin page sample
 ```dart
 import 'package:auto_layout/auto_layout.dart';
 import 'package:flutter/material.dart';
@@ -31,13 +40,13 @@ class AdminPage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return ListTile(
                     onTap: () {
-                      buildBody(index);
+                      buildBody(index); //must invoke the method to build body content
                     },
                     title: Text('menu_$index'),
                   );
                 });
           },
-          initialPage: 2,
+          initialPage: 0,//start index = 0
           bodyItemBuilder: (context, index) {
             print('building body $index');
             return index == null ? Text("Welcome") : Text("body_$index");

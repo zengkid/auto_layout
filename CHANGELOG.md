@@ -1,3 +1,6 @@
+## 1.0.4 - 2021-01-11
+- add some docs
+
 ## 1.0.3 - 2021-01-10
 - make menu custom  build.
 

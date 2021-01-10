@@ -1,6 +1,6 @@
 name: auto_layout
-description: auto layout with difference device
-version: 1.0.3
+description: auto layout builder, it can build  difference layout with difference device
+version: 1.0.4
 homepage: https://github.com/zengkid/auto_layout
 
 environment:
