@@ -1,3 +1,6 @@
+## 1.0.5
+- null safe migration
+
 ## 1.0.4 - 2021-01-11
 - add some docs
 
