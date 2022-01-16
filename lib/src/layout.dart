@@ -8,22 +8,22 @@ typedef MenuBuilder = Widget Function(BuildContext context, BuildBody handle);
 /// build a auto layout widget
 class AudoLayoutBuilder extends StatefulWidget {
   ///app bar title
-  final Widget title;
+  final Widget? title;
 
   ///define large device width, default is 600
   final int largeBreakpoint;
 
   ///initial page index
-  final int initialPage;
+  final int? initialPage;
 
   ///menu builder
-  final MenuBuilder menuBuilder;
+  final MenuBuilder? menuBuilder;
 
   ///body item builder, dependent on menu index
-  final IndexedWidgetBuilder bodyItemBuilder;
+  final IndexedWidgetBuilder? bodyItemBuilder;
 
   ///app bar actions
-  final List<Widget> actions;
+  final List<Widget>? actions;
 
   /// build a auto layout
   ///
@@ -53,7 +53,7 @@ class AudoLayoutBuilder extends StatefulWidget {
   ///  })
   ///```
   const AudoLayoutBuilder(
-      {Key key,
+      {Key? key,
       this.title,
       this.actions,
       this.menuBuilder,
@@ -68,12 +68,12 @@ class AudoLayoutBuilder extends StatefulWidget {
 
 class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
     with TickerProviderStateMixin {
-  int _currentIndex;
+  int? _currentIndex;
   bool _hideMenu = false;
 
-  AnimationController _animationController;
-  Animation<double> _menuAnimation;
-  Animation<double> _iconAnimation;
+  late AnimationController _animationController;
+  late Animation<double> _menuAnimation;
+  late Animation<double> _iconAnimation;
 
   @override
   void initState() {
@@ -154,7 +154,7 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: widget.bodyItemBuilder(context, _currentIndex),
+          child: widget.bodyItemBuilder!(context, _currentIndex!),
         ),
       ),
     );
@@ -188,7 +188,7 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
                 children: <Widget>[
                   AnimatedBuilder(
                     animation: _menuAnimation,
-                    builder: (BuildContext context, Widget child) {
+                    builder: (BuildContext context, Widget? child) {
                       return Container(
                           width: _menuAnimation.value * drawerWidth,
                           child: child);
@@ -201,7 +201,7 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(10),
-                      child: widget.bodyItemBuilder(context, _currentIndex),
+                      child: widget.bodyItemBuilder!(context, _currentIndex!),
                     ),
                   ),
                 ],
@@ -214,7 +214,7 @@ class _AudoLayoutBuilderState extends State<AudoLayoutBuilder>
   }
 
   Widget _buildMenus([bool needHide = false]) {
-    return widget.menuBuilder(context, (index) {
+    return widget.menuBuilder!(context, (index) {
       setState(() {
         _currentIndex = index;
       });
